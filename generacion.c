@@ -438,7 +438,7 @@ void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta)
 		}
 
 	fprintf(fpasm, "\tcmp eax, 0\n");
-	fprintf(fpasm, "\tje   _fin_if%d\n", etiqueta);
+	fprintf(fpasm, "\tje   _fin_then%d\n", etiqueta);
 }
 
 void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta)
@@ -461,7 +461,7 @@ void ifthen_fin(FILE * fpasm, int etiqueta)
 
 void ifthenelse_fin_then( FILE * fpasm, int etiqueta)
  {
-	 fprintf(fpasm, "\tjmp   _fin_if_else%d: \n", etiqueta);
+	 fprintf(fpasm, "\tjmp   _fin_if_else%d \n", etiqueta);
 	 fprintf(fpasm, "\t_fin_then%d: \n", etiqueta);
  }
 

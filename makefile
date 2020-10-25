@@ -4,8 +4,9 @@ CFLAGS= -g -Wall -pedantic -ansi
 OBJECTSP1E1 = main_0_generacion.o generacion.o
 OBJECTSP1E2 = main_generacion.o generacion.o
 OBJECTSP1E3 = main_2_generacion.o generacion.o
+OBJECTSP1E4 = main_ifelse.o generacion.o
 
-all : main_0_generacion main_generacion main_2_generacion
+all : main_0_generacion main_generacion main_2_generacion main_ifelse
 
 main_0_generacion: $(OBJECTSP1E1)
 	$(CC) $(CFLAGS) -o main_0_generacion $(OBJECTSP1E1)
@@ -25,6 +26,12 @@ main_2_generacion: $(OBJECTSP1E3)
 main_2_generacion.o: main_2_generacion.c generacion.h
 	$(CC) $(CFLAGS) -c main_2_generacion.c
 
+main_ifelse: $(OBJECTSP1E4)
+	$(CC) $(CFLAGS) -o main_ifelse $(OBJECTSP1E4)
+
+main_ifelse.o: main_ifelse.c generacion.h
+	$(CC) $(CFLAGS) -c main_ifelse.c
+
 generacion.o: generacion.c generacion.h
 	$(CC) $(CFLAGS) -c generacion.c
 
@@ -42,3 +49,6 @@ runmain_generacion:
 
 runmain_2_generacion:
 	./main_2_generacion main2.asm
+
+runmain_ifelse:
+	./main_ifelse mainifelse.asm
