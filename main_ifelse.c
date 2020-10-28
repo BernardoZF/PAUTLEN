@@ -69,4 +69,5 @@ int main (int argc, char ** argv)
   cima_etiquetas--;
   escribir_fin(fd_asm);
   fclose(fd_asm);
+  return 0;
 }

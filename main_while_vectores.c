@@ -17,12 +17,17 @@
 #include "generacion.h"
 int main (int argc, char ** argv)
 {
-if (argc != 2) {fprintf (stdout, "ERROR POCOS ARGUMENTOS\n"); return -1;}
 int etiqueta = 0;
 int getiqueta = 0;
 int etiquetas[MAX_ETIQUETAS];
 int cima_etiquetas=-1;
 FILE * fd_asm;
+
+if (argc != 2) {
+    fprintf (stdout, "ERROR POCOS ARGUMENTOS\n"); return -1;
+    }
+
+
 fd_asm = fopen(argv[1],"w");
 escribir_subseccion_data(fd_asm);
 escribir_cabecera_bss(fd_asm);
@@ -73,4 +78,5 @@ while_fin(fd_asm, etiqueta);
 cima_etiquetas--;
 escribir_fin(fd_asm);
 fclose(fd_asm);
+return 0;
 }

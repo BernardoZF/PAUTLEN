@@ -8,8 +8,7 @@ void escribir_subseccion_data(FILE* fpasm)
 {
 	fprintf(fpasm, "segment .data\n");
 	fprintf(fpasm, "\t_msg_error_div db  \"Error, división por 0\", 0 \n");
-	//fprintf(fpasm, "\t_msg_error_rango db \n");
-	fprintf(fpasm, "\t_msg_error_vector db  \"Error, en el vector\", 0 \n");
+	fprintf(fpasm, "\t_msg_error_vector db  \"Indice del vector fuera de rango\", 0 \n");
 }
 
 void escribir_cabecera_bss(FILE* fpasm)
@@ -114,10 +113,10 @@ void restar(FILE* fpasm, int es_referencia_1, int es_referencia_2)
 	fprintf( fpasm, "\tpop dword ebx\n ");
 
 	if(es_referencia_2>0){
-		fprintf( fpasm, "\tmov eax, [eax]\n ");
+		fprintf( fpasm, "\tmov dword eax, [eax]\n ");
 	}
 	if(es_referencia_1>0){
-	fprintf( fpasm, "\tmov ebx, [ebx]\n ");
+	fprintf( fpasm, "\tmov dword ebx, [ebx]\n ");
 	}
 	fprintf(fpasm, "\tsub eax, ebx\n");
 
@@ -134,10 +133,10 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2)
 	fprintf( fpasm, "\tpop dword eax\n ");
 	fprintf( fpasm, "\tpop dword ebx\n ");
 
-	if( es_variable_2>0){
+	if( es_variable_1>0){
 			fprintf( fpasm, "\tmov dword ebx, [ebx]\n ");
 	}
-	if( es_variable_1>0){
+	if( es_variable_2>0){
     	fprintf( fpasm, "\tmov dword eax, [eax]\n ");
 	}
 
@@ -154,11 +153,11 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2)
 	fprintf(fpasm, "\tpop dword eax\n");
 
 
-	if (es_variable_2>0) {
-		fprintf(fpasm, "\tmov eax, dword [eax]\n");
-	}
 	if (es_variable_1>0) {
-		fprintf(fpasm, "\tmov ebx, dword [ebx]\n");
+		fprintf(fpasm, "\tmov dword eax, [eax]\n");
+	}
+	if (es_variable_2>0) {
+		fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
 	}
 
 	fprintf(fpasm, "\tcmp ebx, 0\n");

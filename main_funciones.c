@@ -16,10 +16,6 @@
 
 int main (int argc, char ** argv)
 {
-int etiqueta = 0;
-int getiqueta = 0;
-int etiquetas[MAX_ETIQUETAS];
-int cima_etiquetas=-1;
 FILE * fd_asm;
 
 fd_asm = fopen(argv[1],"w");
@@ -53,4 +49,5 @@ llamarFuncion(fd_asm,"doble",1);
 escribir(fd_asm,0,ENTERO);
 escribir_fin(fd_asm);
 fclose(fd_asm);
+return 0;
 }
