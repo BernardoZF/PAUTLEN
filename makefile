@@ -69,7 +69,7 @@ runmain_2_generacion:
 	./main_2_generacion main2.asm
 	nasm -g -felf32 main2.asm -o main2.o
 	gcc -g -m32 alfalib.o main2.o -o main2
-	./main2
+
 
 runmain_ifelse:
 	./main_ifelse mainifelse.asm
