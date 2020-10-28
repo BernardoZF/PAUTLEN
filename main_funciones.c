@@ -18,6 +18,11 @@ int main (int argc, char ** argv)
 {
 FILE * fd_asm;
 
+	if (argc != 2) {
+    fprintf (stdout, "ERROR POCOS ARGUMENTOS\n");
+     return -1;
+  }
+
 fd_asm = fopen(argv[1],"w");
 escribir_subseccion_data(fd_asm);
 escribir_cabecera_bss(fd_asm);
