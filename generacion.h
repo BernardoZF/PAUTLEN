@@ -269,4 +269,87 @@ void while_fin( FILE * fpasm, int etiqueta);
 * Y tras ser invocada debe realizar el proceso para ajustar la información de las etiquetas
 * puesto que se ha liberado la última de ellas.
 */
+
+void escribir_elemento_vector(FILE * fpasm,char * nombre_vector,
+int tam_max, int exp_es_direccion);
+/*
+* Generación de código para indexar un vector
+*  Cuyo nombre es nombre_vector
+*  Declarado con un tamaño tam_max
+*  La expresión que lo indexa está en la cima de la pila
+*  Puede ser una variable (o algo equivalente) en cuyo caso exp_es_direccion vale 1
+*  Puede ser un valor concreto (en ese caso exp_es_direccion vale 0)
+* Según se especifica en el material, es suficiente con utilizar dos registros para realizar esta
+* tarea
+*/
+
+void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc);
+/*
+* Generación de código para iniciar la declaración de una función.
+* Es necesario proporcionar
+* Su nombre
+* Su número de variables locales
+*/
+
+void retornarFuncion(FILE * fd_asm, int es_variable);
+/*
+* Generación de código para el retorno de una función.
+*  La expresión que se retorna está en la cima de la pila.
+*  Puede ser una variable (o algo equivalente) en cuyo caso exp_es_direccion vale 1
+*  Puede ser un valor concreto (en ese caso exp_es_direccion vale 0)
+*/
+
+void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros);
+/*
+* Función para dejar en la cima de la pila la dirección efectiva del parámetro que ocupa la
+* posición pos_parametro (recuerda que los parámetros se ordenan con origen 0) de un total
+* de num_total_parametros
+*/
+
+void escribirVariableLocal(FILE* fpasm, int posicion_variable_local);
+/*
+* Función para dejar en la cima de la pila la dirección efectiva de la variable local que ocupa
+* la posición posicion_variable_local (recuerda que ordenadas con origen 1)
+*/
+
+void asignarDestinoEnPila(FILE* fpasm, int es_variable);
+/*
+* Función para poder asignar a un destino que no es una variable “global” (tipo _x) por
+* ejemplo parámetros o variables locales (ya que en ese caso su nombre real de alto nivel, no
+* se tiene en cuenta pues es realmente un desplazamiento a partir de ebp: ebp+4 o ebp-8 por
+* ejemplo).
+* Se debe asumir que en la pila estará
+*  Primero (en la cima) la dirección donde hay que asignar
+*  Debajo (se ha introducido en la pila antes) lo que hay que asignar
+* es_variable
+*  Es 1 si la expresión que se va a asignar es algo asimilable a una variable
+* (identificador, o elemento de vector)
+*  Es 0 en caso contrario (constante u otro tipo de expresión)
+*/
+
+void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable);
+/*
+* Como habrás visto en el material, nuestro convenio de llamadas a las funciones asume que
+* los argumentos se pasan por valor, esto significa que siempre se dejan en la pila “valores” y
+* no “variables”
+* Esta función realiza la tarea de dado un operando escrito en la pila y sabiendo si es variable
+* o no (es_variable) se deja en la pila el valor correspondiente
+*/
+
+void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos);
+/*
+* Esta función genera código para llamar a la función nombre_funcion asumiendo que los
+* argumentos están en la pila en el orden fijado en el material de la asignatura.
+* Debe dejar en la cima de la pila el retorno de la función tras haberla limpiado de sus
+* argumentos
+* Para limpiar la pila puede utilizar la función de nombre limpiarPila
+*/
+
+void limpiarPila(FILE * fd_asm, int num_argumentos);
+/*
+* Genera código para limpiar la pila tras invocar una función
+* Esta función es necesaria para completar la llamada a métodos, su gestión dificulta el
+* conocimiento por parte de la función de llamada del número de argumentos que hay en la
+* pila
+*/
 #endif
