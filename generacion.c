@@ -7,9 +7,9 @@
 void escribir_subseccion_data(FILE* fpasm)
 {
 	fprintf(fpasm, "segment .data\n");
-	fprintf(fpasm, "\t_msg_error_div db  \"Error, división por 0\" \n");
-	fprintf(fpasm, "\t_msg_error_rango db \n");
-	fprintf(fpasm, "\t_msg_error_vector db  \"Error, en el vector\" \n");
+	fprintf(fpasm, "\t_msg_error_div db  \"Error, división por 0\", 0 \n");
+	//fprintf(fpasm, "\t_msg_error_rango db \n");
+	fprintf(fpasm, "\t_msg_error_vector db  \"Error, en el vector\", 0 \n");
 }
 
 void escribir_cabecera_bss(FILE* fpasm)
@@ -20,11 +20,7 @@ void escribir_cabecera_bss(FILE* fpasm)
 
 void declarar_variable(FILE* fpasm, char * nombre,  int tipo,  int tamano)
 {
-	if(tipo == ENTERO){
 		fprintf(fpasm, "\t_%s resd %d\n", nombre, tamano);
-	}else{
-		fprintf(fpasm, "\t_%s resw %d\n", nombre, tamano); /*para un booleano es resw?*/
-	}
 }
 
 void escribir_segmento_codigo(FILE* fpasm){
@@ -51,7 +47,7 @@ void escribir_fin(FILE* fpasm)
 {
 	fprintf(fpasm, "\tjmp fin\n");
 	fprintf(fpasm, "error_div_cero:\n");
-	fprintf(fpasm, "\tpush dword msg_error_div\n");
+	fprintf(fpasm, "\tpush dword _msg_error_div\n");
 	fprintf(fpasm, "\tcall print_string\n");
 	fprintf(fpasm, "\tadd esp, 4\n");
 	fprintf(fpasm, "\tcall print_endofline\n");
@@ -59,7 +55,7 @@ void escribir_fin(FILE* fpasm)
 
 
 	fprintf(fpasm, "error_vector:\n");
-	fprintf(fpasm, "\tpush dword msg_error_vector\n");
+	fprintf(fpasm, "\tpush dword _msg_error_vector\n");
 	fprintf(fpasm, "\tcall print_string\n");
 	fprintf(fpasm, "\tadd esp, 4\n");
 	fprintf(fpasm, "\tcall print_endofline\n");
@@ -74,8 +70,7 @@ void escribir_operando(FILE* fpasm, char* nombre, int es_var)
 {
 
 	if (es_var == 0){ /* cuando es 0 hace referencia a un numero*/
-		fprintf(fpasm, "\tmov dword eax, %s\n", nombre);
-		fprintf(fpasm,"\tpush dword eax\n");
+		fprintf(fpasm,"\tpush dword %s\n", nombre);
 	}else{ /* cuando es 1 hace referencia a una variable*/
 		fprintf(fpasm,"\tpush dword _%s\n", nombre);
 	}
@@ -98,9 +93,14 @@ void sumar(FILE* fpasm, int es_variable_1, int es_variable_2)
 {
 
 	fprintf( fpasm, "\tpop dword eax\n ");
-	fprintf( fpasm, "\tmov eax, [eax]\n ");
 	fprintf( fpasm, "\tpop dword ebx\n ");
+
+	if(es_variable_2>0){
+		fprintf( fpasm, "\tmov eax, [eax]\n ");
+	}
+	if(es_variable_1>0){
 	fprintf( fpasm, "\tmov ebx, [ebx]\n ");
+	}
 
 	fprintf(fpasm, "\tadd eax, ebx\n");
 
@@ -111,10 +111,14 @@ void restar(FILE* fpasm, int es_referencia_1, int es_referencia_2)
 {
 
 	fprintf( fpasm, "\tpop dword eax\n ");
-	fprintf( fpasm, "\tmov eax, [eax]\n ");
 	fprintf( fpasm, "\tpop dword ebx\n ");
-	fprintf( fpasm, "\tmov ebx, [ebx]\n ");
 
+	if(es_referencia_2>0){
+		fprintf( fpasm, "\tmov eax, [eax]\n ");
+	}
+	if(es_referencia_1>0){
+	fprintf( fpasm, "\tmov ebx, [ebx]\n ");
+	}
 	fprintf(fpasm, "\tsub eax, ebx\n");
 
 	fprintf(fpasm, "\tpush dword eax\n");
@@ -131,18 +135,16 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2)
 	fprintf( fpasm, "\tpop dword ebx\n ");
 
 	if( es_variable_2>0){
+			fprintf( fpasm, "\tmov dword ebx, [ebx]\n ");
+	}
+	if( es_variable_1>0){
     	fprintf( fpasm, "\tmov dword eax, [eax]\n ");
 	}
 
-	if( es_variable_1>0){
-    	fprintf( fpasm, "\tmov dword ebx, [ebx]\n ");
-	}
 
 	fprintf( fpasm, "\timul ebx \n");
 
-	/* Se almacena la parte baja del resultado*/
 	fprintf( fpasm, "\tpush dword eax \n");
-
 }
 
 void dividir(FILE* fpasm, int es_variable_1, int es_variable_2)
@@ -152,10 +154,10 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2)
 	fprintf(fpasm, "\tpop dword eax\n");
 
 
-	if (es_variable_1>0) {
+	if (es_variable_2>0) {
 		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
-	if (es_variable_2>0) {
+	if (es_variable_1>0) {
 		fprintf(fpasm, "\tmov ebx, dword [ebx]\n");
 	}
 
@@ -170,30 +172,30 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2)
 
 void o(FILE* fpasm, int es_variable1, int es_variable2)
 {
-	fprintf(fpasm, "\tpop dword edx\n"); /*extraemos la segunda variable*/
+	fprintf(fpasm, "\tpop dword ebx\n"); /*extraemos la segunda variable*/
 	if(es_variable2 >0){
-		fprintf(fpasm, "\tmov dword edx, [edx]\n");  /*comprobamos si la segunda*/
+		fprintf(fpasm, "\tmov dword ebx, [ebx]\n");  /*comprobamos si la segunda*/
 /*variable es un valor o una
 posición de memoria*/
 	}
 
 	fprintf(fpasm, "\tpop dword eax\n"); /*extraemos la primera variable*/
-	if(es_variable1>0){
+	if(es_variable1 >0){
 		fprintf(fpasm, "\tmov dword eax, [eax]\n");  /*comprobamos si la primera*/
 /*variable es un valor o una
 posición de memoria*/
 	}
 
-	fprintf(fpasm, "\tor eax, edx\n"); /*operación (el resultado se guarda en eax)*/
+	fprintf(fpasm, "\tor eax, ebx\n"); /*operación (el resultado se guarda en eax)*/
 	fprintf(fpasm, "\tpush dword eax\n");
 }
 
 
 void y(FILE* fpasm, int es_variable1, int es_variable2)
 {
-	fprintf(fpasm, "\tpop dword edx\n"); /*extraemos la segunda variable*/
+	fprintf(fpasm, "\tpop dword ebx\n"); /*extraemos la segunda variable*/
 	if(es_variable2 > 0){
-		fprintf(fpasm, "\tmov dword edx, [edx]\n");  /*comprobamos si la segunda*/
+		fprintf(fpasm, "\tmov dword ebx, [ebx]\n");  /*comprobamos si la segunda*/
 /*variable es un valor o una
 posición de memoria*/
 	}
@@ -205,7 +207,7 @@ posición de memoria*/
 posición de memoria*/
 	}
 
-	fprintf(fpasm, "\tand eax, edx\n"); /*operación (el resultado se guarda en eax)*/
+	fprintf(fpasm, "\tand eax, ebx\n"); /*operación (el resultado se guarda en eax)*/
 	fprintf(fpasm, "\tpush dword eax\n");
 }
 
@@ -472,22 +474,22 @@ void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta)
 {
 	fprintf(fpasm, "\tpop eax \n");
 	if(exp_es_variable>0){
-		fprint(fpasm,"\tmov eax, [eax]\n");
+		fprintf(fpasm,"\tmov eax, [eax]\n");
 	}
-	fprintf(fpasm, "\tcmp eax, 0");
-	fprintf(fpasm, "\tje _fin_while%d \n", etiqueta );
+	fprintf(fpasm, "\tcmp eax, 0\n");
+	fprintf(fpasm, "\tje _fin_while%d\n", etiqueta );
 }
 
 
 void while_fin( FILE * fpasm, int etiqueta)
 {
 	fprintf(fpasm, "\t jmp   _while_start%d \n", etiqueta);
-	fprintf(fpasm, "\t_fin_while%d \n", etiqueta );
+	fprintf(fpasm, "\t_fin_while%d: \n", etiqueta );
 }
 
 
 void escribir_elemento_vector(FILE * fpasm,char * nombre_vector,
-int tam_max, int exp_es_direccion);
+int tam_max, int exp_es_direccion)
 {
 	fprintf(fpasm, "\tpop dword eax\n");
 
@@ -504,40 +506,40 @@ int tam_max, int exp_es_direccion);
 	fprintf(fpasm, "\tpush dword eax\n");
 }
 
-void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc);
+void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc)
 {
-	fprintf(fpasm, "_%s:\n", nombre_funcion);
-	fprintf(fpasm, "\tpush ebp\n");
-	fprintf(fpasm, "\tmov ebp, esp\n");
-	fprintf(fpasm, "\t sub esp, %d", 4*num_var_loc);
+	fprintf(fd_asm, "_%s:\n", nombre_funcion);
+	fprintf(fd_asm, "\tpush ebp\n");
+	fprintf(fd_asm, "\tmov ebp, esp\n");
+	fprintf(fd_asm, "\t sub esp, %d\n", 4*num_var_loc);
 }
 
-void retornarFuncion(FILE * fd_asm, int es_variable);
+void retornarFuncion(FILE * fd_asm, int es_variable)
 {
-	fprintf(fpasm, "\tpop dword eax\n");
+	fprintf(fd_asm, "\tpop dword eax\n");
 
 	if (es_variable>0){
-		fprintf(fpasm, "\tmov eax, [eax]\n");
+		fprintf(fd_asm, "\tmov eax, [eax]\n");
 	}
 
-	fprintf(fpasm, "\tmov dword esp, ebp\n");
-	fprintf(fpasm, "\tpop dword ebp\n");
-	fprintf(fpasm, "\tret\n");
+	fprintf(fd_asm, "\tmov dword esp, ebp\n");
+	fprintf(fd_asm, "\tpop dword ebp\n");
+	fprintf(fd_asm, "\tret\n");
 }
 
-void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros);
+void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros)
 {
 	fprintf(fpasm, "\tlea eax, [ebp+%d]\n", 4 + 4 * (num_total_parametros - pos_parametro));
 	fprintf(fpasm, "\tpush dword eax\n");
 }
 
-void escribirVariableLocal(FILE* fpasm, int posicion_variable_local);
+void escribirVariableLocal(FILE* fpasm, int posicion_variable_local)
 {
 	fprintf(fpasm, "\tlea eax, [ebp-%d]\n", 4 * posicion_variable_local);
 	fprintf(fpasm, "\tpush dword eax\n");
 }
 
-void asignarDestinoEnPila(FILE* fpasm, int es_variable);
+void asignarDestinoEnPila(FILE* fpasm, int es_variable)
 {
 	fprintf(fpasm, "\tpop dword eax\n");
 	fprintf(fpasm, "\tpop dword ebx\n");
@@ -549,7 +551,7 @@ void asignarDestinoEnPila(FILE* fpasm, int es_variable);
 	fprintf(fpasm, "\tmov [eax], ebx\n");
 }
 
-void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable);
+void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable)
 {
 	if (es_variable>0) {
 		fprintf(fd_asm, "\tpop eax\n");
@@ -557,14 +559,14 @@ void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable);
 	}
 }
 
-void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos);
+void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos)
 {
 	fprintf(fd_asm, "\tcall _%s\n", nombre_funcion);
 	fprintf(fd_asm, "\tadd esp, %d\n", 4*num_argumentos);
 	fprintf(fd_asm, "\tpush dword eax\n");
 }
 
-void limpiarPila(FILE * fd_asm, int num_argumentos);
+void limpiarPila(FILE * fd_asm, int num_argumentos)
 {
-	fprintf(fpasm, "\tadd esp, %d\n", 4*num_argumentos );
+	fprintf(fd_asm, "\tadd esp, %d\n", 4*num_argumentos );
 }

@@ -57,18 +57,36 @@ clean:
 
 runmain_0_generacion:
 	./main_0_generacion main0.asm
+	nasm -g -felf32 main0.asm -o main0.o
+	gcc -g -m32 alfalib.o main0.o -o main0
+	./main0
 
 runmain_generacion:
 	./main_generacion main.asm
+	nasm -g -felf32 main.asm -o main.o
+	gcc -g -m32 alfalib.o main.o -o main
+	./main
 
 runmain_2_generacion:
 	./main_2_generacion main2.asm
+	nasm -g -felf32 main2.asm -o main2.o
+	gcc -g -m32 alfalib.o main2.o -o main2
+	./main2
 
 runmain_ifelse:
 	./main_ifelse mainifelse.asm
+	nasm -g -felf32 mainifelse.asm -o mainifelse.o
+	gcc -g -m32 alfalib.o mainifelse.o -o mainifelse
+	./mainifelse
 
 runmain_while_vectores:
-	./main_while_vectores main_while_vectores.asm
+	./main_while_vectores main_whilevectores.asm
+	nasm -g -felf32 main_whilevectores.asm -o main_whilevectores.o
+	gcc -g -m32 alfalib.o main_whilevectores.o -o main_whilevectores
+	./main_whilevectores
 
 runmain_funciones:
-	./main_funciones main_funciones.asm
+	./main_funciones mainfunciones.asm
+	nasm -g -felf32 mainfunciones.asm -o mainfunciones.o
+	gcc -g -m32 alfalib.o mainfunciones.o -o mainfunciones
+	./main_funciones
