@@ -37,6 +37,13 @@ int main(int argc, char ** argv) {
             case TOK_INT:
               fprintf(fout, "TOK_INT\t%d\t%s\n", flag, yytext);
               break;
+            /*seguid desde aqui*/
+            case TOK_ERROR:
+              fclose(yyout);
+              fclose(yyin);
+              fclose(fout);
+              return -1;
+            }
     }
     fclose(yyout);
     fclose(yyin);
