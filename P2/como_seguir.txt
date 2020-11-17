@@ -1,8 +1,0 @@
-Ya lo que queda es eguir con el switch para todos los tokens que faltan (mirad el tokens.h) que me ha dado pereza seguir,
- los mensajes de errores ya deberian salir por lo que hay en el alfa.l
-
-
-para comprobar que esta bien teneis que mirar que para los archivos entrada2.txt y entrada3.txt
-salgan por pantalla los mensajes de error que salen en el leeme.txt(que deberian salir sin que pongais nada)
-ademas de eso probad con el comando diff –Bb salida1.txt misalida1.txt para cada uno de los archivos
- para que la salida sea correcta no os deberia salir nada en la consola despues de poner el comando en cosola

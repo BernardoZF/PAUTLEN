@@ -10,9 +10,9 @@ all:
 .PHONY: clean run_1 run_2 run_3
 
 clean:
-	rm pruebaMorfo
-	rm default.txt misalida1.txt misalida2.txt misalida3.txt
-	rm $(LEX)
+	rm -rf pruebaMorfo
+	rm -rf default.txt misalida1.txt misalida2.txt misalida3.txt
+	rm -rf $(LEX)
 
 run_1:
 	@echo Ejecucion con entrada1.txt
