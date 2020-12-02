@@ -245,7 +245,7 @@ fprintf(fpasm, "_fin_not%d:\n", cuantos_no);
 }
 
 
- void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta)
+void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta)
  {
  	fprintf( fpasm, "\tpop dword ebx\n" );
  fprintf( fpasm, "\tpop dword eax\n" );
@@ -262,11 +262,11 @@ fprintf(fpasm, "_fin_not%d:\n", cuantos_no);
  fprintf( fpasm, "\tje _%d\n", etiqueta );
 
 
- }
+}
 
 
 
- void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 
 
 	fprintf(fpasm, "\tpop dword ebx\n\tpop dword eax\n");
