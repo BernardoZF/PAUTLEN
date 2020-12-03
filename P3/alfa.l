@@ -29,7 +29,7 @@ COMENTARIO "//".*\n
 "scanf"               {columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext);return TOK_SCANF;}
 "printf"              {columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext);return TOK_PRINTF;}
 "return"              {columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext);return TOK_PRINTF;}
-";"                   {columna += yyleng; fprintf(fout, ";D:\t;\n", yytext);return TOK_PUNTOYCOMA;}
+";"                   {columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_PUNTOYCOMA;}
 ","                   {columna += yyleng; fprintf(fout, ";D:\t,\n");return TOK_COMA;}
 "("                   {columna += yyleng; fprintf(fout, ";D:\t(\n");return TOK_PARENTESISIZQUIERDO;}
 ")"                   {columna += yyleng; fprintf(fout, ";D:\t)\n");return TOK_PARENTESISDERECHO;}

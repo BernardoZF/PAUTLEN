@@ -63,8 +63,8 @@ void yyerror(char * s)
 %token TOK_ERROR
 
 %start programa
-%left '+' '-' TOK_OR
-%left '*' '/' TOK_AND
+%left TOK_MAS TOK_MENOS TOK_OR
+%left TOK_ASTERISCO TOK_DIVISION TOK_AND
 %right MENOSU '!'
 
 %%
