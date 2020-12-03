@@ -53,16 +53,16 @@ int main(int argc, char const *argv[]) {
       if(s == NULL){
         fprintf(salida, "%s\t-1\n",lex);
       }else{
-        fprintf(salida, "%s\t%d\n", lex, s->extra_info1);
+        fprintf(salida, "%s\t%d\n", s->lexema, s->extra_info1);
       }
     }else{
       sscanf(line, "%s %d", lex, &opt);
       if(opt>=0){
         s = simbolo_init(lex, VARIABLE, ENTERO, ESCALAR, opt, -1);
         if(symbol_insert(s) == ERROR){
-          fprintf(salida, "-1\t%s\n", lex);
+          fprintf(salida, "-1\t%s\n", s->lexema);
         }else{
-          fprintf(salida, "%s\n", lex);
+          fprintf(salida, "%s\n", s->lexema);
         }
         simbolo_free(s);
       }else{
@@ -72,9 +72,9 @@ int main(int argc, char const *argv[]) {
         }else{
           s = simbolo_init(lex, FUNCION, ENTERO, ESCALAR, opt, 0);
           if(crearAmbitoLocal(lex, s) == ERROR){
-            fprintf(salida, "-1\t%s\n", lex);
+            fprintf(salida, "-1\t%s\n", s->lexema);
           }else{
-            fprintf(salida, "%s\n", lex);
+            fprintf(salida, "%s\n", s->lexema);
           }
           simbolo_free(s);
         }

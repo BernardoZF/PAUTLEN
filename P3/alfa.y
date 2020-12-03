@@ -120,7 +120,7 @@ bloque : condicional {fprintf(fout, ";R40:\t<bloque> ::= <condicional>\n");}
         | bucle {fprintf(fout, ";R41:\t<bloque> ::= <bucle>\n");}
 
 asignacion : identificador TOK_ASIGNACION exp {fprintf(fout, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");}
-            | elemento_vector TOK_ASIGNACION {fprintf(fout, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");}
+            | elemento_vector TOK_ASIGNACION exp{fprintf(fout, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");}
 
 elemento_vector : identificador TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO {fprintf(fout, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");}
 
