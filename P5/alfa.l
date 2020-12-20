@@ -2,6 +2,7 @@
 #include "alfa.h"
 #include <stdio.h>
 #include "y.tab.h"
+#include "hash.h"
 
 int linea = 1;
 int columna = 1;
@@ -18,7 +19,7 @@ ENTERO {DIGITO}+
 COMENTARIO "//".*\n
 %%
 {COMENTARIO}          {linea++; columna = 1;}
-{ENTERO}              {yylval.atributos.valor_entero=atoi(yytext);columna +=yyleng; fprintf(fout, ";D:\t%s\n", yytext);return TOK_CONSTANTE_ENTERA;}
+{ENTERO}              {yylval.atributos.tipo = ENTERO; yylval.atributos.valor_entero=atoi(yytext); strcpy(yylval.atributos.lexema , yytext); columna +=yyleng; fprintf(fout, ";D:\t%s\n", yytext);return TOK_CONSTANTE_ENTERA;}
 function			{columna+=yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_FUNCTION;}
 return				{columna+=yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_RETURN;}
 main				{columna+=yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_MAIN;}
@@ -67,6 +68,7 @@ true				{columna+=yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_TRUE;}
                             return TOK_ERROR;
                           }else{
                             columna+=yyleng;
+                            strcpy(yylval.atributos.lexema , yytext);
                             fprintf(fout, ";D:\t%s\n", yytext);
                             return TOK_IDENTIFICADOR;
                             }

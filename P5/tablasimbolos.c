@@ -76,20 +76,20 @@ SIMBOLO *buscarSimbolo(const char *lex)
         printf("ERROR EN BUSCAR SIMBOLO");
         return NULL;
     }
-    printf("busqueda de simbolo iniciada\n");
+
     //Si existe contexto local
     if (table->contexto_local != NULL){
         //Buscamos símbolo
-        printf("busqueda local entrando \n");
+
         simb = find_simbolo(table->contexto_local, lex);
-        printf("salida de ambito local\n");
+
 
         //Lo devolvemos si existe
         if (simb){
             return simb;
         }
     }
-    printf("busqueda en tabla global\n");
+    
     if(table->contexto_global)
       simb = find_simbolo(table->contexto_global, lex);
     if(!simb){

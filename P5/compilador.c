@@ -1,6 +1,6 @@
 #include "alfa.h"
 #include "y.tab.h"
-#include "generador_codigo/generacion.h"
+#include "generacion.h"
 
 extern FILE* yyin;
 FILE* fout;
@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
     fprintf(stderr, "formato incorrecto:\n./alfa input output\n");
     return 1;
   }
-  
+
   yyparse();
   fclose(yyin);
 

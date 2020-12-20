@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-
+typedef enum { FALSE = 0, TRUE = 1 } BOOL;
 
 typedef struct {
 	char lexema[101];
