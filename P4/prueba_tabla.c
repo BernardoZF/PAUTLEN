@@ -17,7 +17,7 @@
 
 int wordcount(char *str) {
 	int i, n = 1;
-	for(i = 0; str[i] != '\0'; i++) if(str[i] == ' ') n++;
+	for(i = 0; str[i] != '\0'; i++) if(str[i] == '\t') n++;
 	return n;
 }
 
@@ -56,7 +56,7 @@ int main(int argc, char const *argv[]) {
         fprintf(salida, "%s\t%d\n", s->lexema, s->extra_info1);
       }
     }else{
-      sscanf(line, "%s %d", lex, &opt);
+      sscanf(line, "%s\t%d", lex, &opt);
       if(opt>=0){
         s = simbolo_init(lex, VARIABLE, ENTERO, ESCALAR, opt, -1);
         if(symbol_insert(s) == ERROR){

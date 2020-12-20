@@ -38,7 +38,7 @@ void Ambito_delete(){
     tablahash_free(table->contexto_global);
 
     //Si no hay contexto local liberamos la tabla
-    if (table->contexto_local == NULL){
+    if (table->contexto_local != NULL){
       tablahash_free(table->contexto_local);
     }
     //Liberamos memoria

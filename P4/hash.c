@@ -50,7 +50,7 @@ void nodo_free(NODO *n){
   if(!n) return;
 
   simbolo_free(n->info);
-  free(n->next);
+  /*free(n->next);*/
   free(n);
 
   return ;
