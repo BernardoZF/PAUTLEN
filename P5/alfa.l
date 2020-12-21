@@ -23,7 +23,7 @@ COMENTARIO "//".*\n
 function			{columna+=yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_FUNCTION;}
 return				{columna+=yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_RETURN;}
 main				{columna+=yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_MAIN;}
-boolean				{columna+=yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_BOOLEAN;}
+boolean				{columna+=yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_BOOLEANO;}
 array				{columna+=yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_ARRAY;}
 printf				{columna+=yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_PRINTF;}
 int					{columna+=yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_INT;}
