@@ -1,28 +1,51 @@
-#include "alfa.h"
-#include "y.tab.h"
-#include "generacion.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-extern FILE* yyin;
-FILE* fout;
+extern int yyparse();
+extern FILE *yyin;
+extern FILE *yyout;
+FILE* yyasm;
 
+int main(int argc, char **argv) {
 
-int main(int argc, char** argv) {
-  if (argc == 2) {
-    yyin = fopen(argv[1], "r");
-    fout = stdout;
-  } else if (argc == 3) {
-    yyin = fopen(argv[1], "r");
-    fout = fopen(argv[2], "w");
-  } else {
-    fprintf(stderr, "formato incorrecto:\n./alfa input output\n");
-    return 1;
+  int ret;
+
+  if (argc < 3) {
+    fprintf(stderr, "Formato: %s <file.in> <file.out> [file.debug]", argv[0]);
+    exit(EXIT_FAILURE);
   }
 
-  yyparse();
+  yyin = fopen(argv[1], "r");
+  if (yyin == NULL) {
+    fprintf(stderr, "Fallo de fopen() en el archivo %s", __FILE__);
+    exit(EXIT_FAILURE);
+  }
+
+  yyasm = fopen(argv[2], "w");
+  if (yyasm == NULL) {
+    fprintf(stderr, "Fallo de fopen() en el archivo %s", __FILE__);
+    exit(EXIT_FAILURE);
+  }
+
+  if (argv[3] != NULL) {
+    yyout = fopen(argv[3], "a");
+    if (yyin == NULL) {
+      fprintf(stderr, "Fallo de fopen() en el archivo %s", __FILE__);
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  ret = yyparse();
+  if (ret != 0) {
+    /* Borramos el fichero asm si hay un error para que el script de
+     * compilacion no trate de compilar el archivo asm incorrecto*/
+    remove(argv[2]);
+  }
+
   fclose(yyin);
+  fclose(yyasm);
+  if (yyout != NULL) {
+    fclose(yyout);
+  }
 
-  if (fout != stdout)
-    fclose(fout);
-
-  return 0;
-}
+  return EXIT_SUCCESS;

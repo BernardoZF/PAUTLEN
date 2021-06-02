@@ -245,153 +245,160 @@ fprintf(fpasm, "_fin_not%d:\n", cuantos_no);
 }
 
 
-void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta)
- {
- 	fprintf( fpasm, "\tpop dword ebx\n" );
- fprintf( fpasm, "\tpop dword eax\n" );
+void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+	
+	// Sacamos las variables de pila
+	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
- if ( es_variable1 ) {
- 	fprintf( fpasm, "\tmov dword ebx, [ebx]\n" );
- }
-
- if ( es_variable2 ) {
- 	fprintf( fpasm, "\tmov dword eax, [eax]\n" );
- }
-
- fprintf(fpasm, "\tcmp eax, ebx\n");
- fprintf(fpasm, "\tje near _igual_%d\n", etiqueta);
- fprintf(fpasm, "\tpush 0\n");
- fprintf(fpasm, "\tjmp near _fin_igual_%d\n", etiqueta);
- fprintf(fpasm, "_igual_%d:\n", etiqueta);
- fprintf(fpasm, "\tpush 1\n");
- fprintf(fpasm, "_fin_igual_%d:\n", etiqueta);
-
-
-}
-
-
-
-void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
-
-
-	fprintf(fpasm, "\tpop dword ebx\n\tpop dword eax\n");
-
-
+	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable2) {
-		fprintf(fpasm, "\tmov ebx, dword [ebx]\n");
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
 	if (es_variable1) {
 		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
-
-
-
-
-	fprintf(fpasm, "\tcmp eax, ebx\n");
-	fprintf(fpasm, "\tjne   _distinto_%d\n", etiqueta);
+	
+	/*Implementado como en las diapositivas, no estoy seguro del todo de si he nombrado bien las 
+		etiquetas ni si he puesto bien la sintaxis de los jump*/
+		
+	fprintf(fpasm, "\tcmp eax, edx\n");
+	fprintf(fpasm, "\tje near _igual_%d\n", etiqueta);
 	fprintf(fpasm, "\tpush 0\n");
-	fprintf(fpasm, "\tjmp   _fin_distinto_%d\n", etiqueta);
+	fprintf(fpasm, "\tjmp near _fin_igual_%d\n", etiqueta);
+	fprintf(fpasm, "_igual_%d:\n", etiqueta);
+	fprintf(fpasm, "\tpush 1\n");
+	fprintf(fpasm, "_fin_igual_%d:\n", etiqueta);
+	
+}
+
+void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+	
+	// Sacamos las variables de pila
+	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
+
+	// Comprobamos si los operandos son referencias o valores explicitos
+	if (es_variable2) {
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
+	}
+	if (es_variable1) {
+		fprintf(fpasm, "\tmov eax, dword [eax]\n");
+	}
+	
+	/*Implementado como en las diapositivas, no estoy seguro del todo de si he nombrado bien las 
+		etiquetas ni si he puesto bien la sintaxis de los jump*/
+		
+	fprintf(fpasm, "\tcmp eax, edx\n");
+	fprintf(fpasm, "\tjne near _distinto_%d\n", etiqueta);
+	fprintf(fpasm, "\tpush 0\n");
+	fprintf(fpasm, "\tjmp near _fin_distinto_%d\n", etiqueta);
 	fprintf(fpasm, "_distinto_%d:\n", etiqueta);
 	fprintf(fpasm, "\tpush 1\n");
 	fprintf(fpasm, "_fin_distinto_%d:\n", etiqueta);
-
+	
 }
 
 void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+	
+	// Sacamos las variables de pila
+	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
-
-	fprintf(fpasm, "\tpop dword ebx\n\tpop dword eax\n");
-
-
-	if (es_variable2 > 0) {
-		fprintf(fpasm, "\tmov ebx, dword [ebx]\n");
+	// Comprobamos si los operandos son referencias o valores explicitos
+	if (es_variable2) {
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
-	if (es_variable1 > 0) {
+	if (es_variable1) {
 		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
 
-
-
-
-	fprintf(fpasm, "\tcmp eax, ebx\n");
-	fprintf(fpasm, "\tjle   _menor_igual_%d\n", etiqueta);
+	/*Implementado como en las diapositivas, no estoy seguro del todo de si he nombrado bien las 
+		etiquetas ni si he puesto bien la sintaxis de los jump*/
+		
+	fprintf(fpasm, "\tcmp eax, edx\n");
+	fprintf(fpasm, "\tjle near _menor_igual_%d\n", etiqueta);
 	fprintf(fpasm, "\tpush 0\n");
-	fprintf(fpasm, "\tjmp   _fin_menor_igual_%d\n", etiqueta);
+	fprintf(fpasm, "\tjmp near _fin_menor_igual_%d\n", etiqueta);
 	fprintf(fpasm, "_menor_igual_%d:\n", etiqueta);
 	fprintf(fpasm, "\tpush 1\n");
 	fprintf(fpasm, "_fin_menor_igual_%d:\n", etiqueta);
-
+	
 }
 
 void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+	
+	// Sacamos las variables de pila
+	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
-
-	fprintf(fpasm, "\tpop dword ebx\n\tpop dword eax\n");
-
-
+	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable2) {
-		fprintf(fpasm, "\tmov ebx, dword [ebx]\n");
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
 	if (es_variable1) {
 		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
-
-
-
-
-	fprintf(fpasm, "\tcmp eax, ebx\n");
-	fprintf(fpasm, "\tjge _mayor_igual_%d\n", etiqueta);
+	
+	/*Implementado como en las diapositivas, no estoy seguro del todo de si he nombrado bien las 
+		etiquetas ni si he puesto bien la sintaxis de los jump*/
+		
+	fprintf(fpasm, "\tcmp eax, edx\n");
+	fprintf(fpasm, "\tjge near _mayor_igual_%d\n", etiqueta);
 	fprintf(fpasm, "\tpush 0\n");
-	fprintf(fpasm, "\tjmp _fin_mayor_igual_%d\n", etiqueta);
+	fprintf(fpasm, "\tjmp near _fin_mayor_igual_%d\n", etiqueta);
 	fprintf(fpasm, "_mayor_igual_%d:\n", etiqueta);
 	fprintf(fpasm, "\tpush 1\n");
 	fprintf(fpasm, "_fin_mayor_igual_%d:\n", etiqueta);
-
+	
 }
 
 void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
+	
+	// Sacamos las variables de pila
+	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
-	fprintf(fpasm, "\tpop dword ebx\n\tpop dword eax\n");
-
+	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable2) {
-		fprintf(fpasm, "\tmov ebx, dword [ebx]\n");
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
 	if (es_variable1) {
 		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
-
-	fprintf(fpasm, "\tcmp eax, ebx\n");
-	fprintf(fpasm, "\tjl _menor_%d\n", etiqueta);
+	
+	/*Implementado como en las diapositivas, no estoy seguro del todo de si he nombrado bien las 
+		etiquetas ni si he puesto bien la sintaxis de los jump*/
+		
+	fprintf(fpasm, "\tcmp eax, edx\n");
+	fprintf(fpasm, "\tjl near _menor_%d\n", etiqueta);
 	fprintf(fpasm, "\tpush 0\n");
-	fprintf(fpasm, "\tjmp _fin_menor_%d\n", etiqueta);
+	fprintf(fpasm, "\tjmp near _fin_menor_%d\n", etiqueta);
 	fprintf(fpasm, "_menor_%d:\n", etiqueta);
 	fprintf(fpasm, "\tpush 1\n");
 	fprintf(fpasm, "_fin_menor_%d:\n", etiqueta);
-
+	
 }
 
 void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+	
+	// Sacamos las variables de pila
+	fprintf(fpasm, "\tpop dword edx\n\tpop dword eax\n");
 
-
-	fprintf(fpasm, "\tpop dword ebx\n\tpop dword eax\n");
-
-
+	// Comprobamos si los operandos son referencias o valores explicitos
 	if (es_variable2) {
-		fprintf(fpasm, "\tmov ebx, dword [ebx]\n");
+		fprintf(fpasm, "\tmov edx, dword [edx]\n");
 	}
 	if (es_variable1) {
 		fprintf(fpasm, "\tmov eax, dword [eax]\n");
 	}
-
-
-	fprintf(fpasm, "\tcmp eax, ebx\n");
-	fprintf(fpasm, "\tjg   _mayor_%d\n", etiqueta);
+	
+	/*Implementado como en las diapositivas, no estoy seguro del todo de si he nombrado bien las 
+		etiquetas ni si he puesto bien la sintaxis de los jump*/
+		
+	fprintf(fpasm, "\tcmp eax, edx\n");
+	fprintf(fpasm, "\tjg near _mayor_%d\n", etiqueta);
 	fprintf(fpasm, "\tpush 0\n");
-	fprintf(fpasm, "\tjmp   _fin_mayor_%d\n", etiqueta);
+	fprintf(fpasm, "\tjmp near _fin_mayor_%d\n", etiqueta);
 	fprintf(fpasm, "_mayor_%d:\n", etiqueta);
 	fprintf(fpasm, "\tpush 1\n");
 	fprintf(fpasm, "_fin_mayor_%d:\n", etiqueta);
-
+	
 }
 
 

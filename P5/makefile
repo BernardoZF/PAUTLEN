@@ -1,6 +1,6 @@
 CC = gcc -pedantic
 CFLAGS = -Wall -g
-OBJECTS = lex.yy.o y.tab.o compilador.o hash.o generacion.o tablasimbolos.o
+OBJECTS = lex.yy.o y.tab.o compilador.o hash.o generacion.o tablasimbolos.o simbolo.o
 
 all: $(OBJECTS)
 	$(CC) $(CFLAGS) -o alfa $(OBJECTS)
@@ -10,8 +10,10 @@ generacion.o: generacion.c generacion.h
 	$(CC) $(CFLAGS) -c generacion.c
 hash.o: hash.c hash.h
 	$(CC) $(CFLAGS) -c hash.c
-tablasimbolos.o: tablasimbolos.c tablasimbolos.h
+tablasimbolos.o: tablasimbolos.c tablasimbolos.h simbolo.c
 	$(CC) $(CFLAGS) -c tablasimbolos.c
+simbolo.o: simbolo.c
+	$(CC) $(CFLAGS) -c simbolo.c
 lex.yy.o: lex.yy.c y.tab.h
 	$(CC) $(CFLAGS) -c lex.yy.c
 y.tab.o: y.tab.c
