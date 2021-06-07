@@ -116,6 +116,7 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2);
 
 void dividir(FILE* fpasm, int es_variable_1, int es_variable_2);
 
+void modulo(FILE* fpasm, int es_variable_1, int es_variable_2);
 
 void o(FILE* fpasm, int es_variable_1, int es_variable_2);
 
