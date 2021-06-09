@@ -189,7 +189,7 @@ void modulo(FILE* fpasm, int es_variable_1, int es_variable_2)
 
 	fprintf(fpasm, "\tcdq\n\tidiv ebx\n");
 
-	/* Se guarda edx en vez de eax porque es aqui dopnde se guarda el modulo */
+	/* Se guarda edx en vez de eax porque es aqui donde se guarda el modulo */
 	fprintf(fpasm, "\tpush dword edx\n");
 }
 
@@ -524,85 +524,136 @@ void while_fin( FILE * fpasm, int etiqueta)
 }
 
 
-void escribir_elemento_vector(FILE * fpasm,char * nombre_vector,
-int tam_max, int exp_es_direccion)
+void escribir_elemento_vector(FILE *fpasm, char *nombre_vector, int tam_max, int exp_es_direccion)
 {
-	fprintf(fpasm, "\tpop dword eax\n");
+    fprintf(fpasm,";; escribir_elemento_vector\n");
 
-	if(exp_es_direccion == 1){
-		fprintf(fpasm, "\tmov dword eax, [eax]\n");
-	}
+    obtener_operando(fpasm, exp_es_direccion);
 
-	fprintf(fpasm, "\tcmp eax,0\n");
-	fprintf(fpasm, "\tjl error_vector\n");
-	fprintf(fpasm, "\tcmp eax, %d\n", tam_max -1);
-	fprintf(fpasm, "\tjg error_vector\n");
-	fprintf(fpasm, "\tmov dword ebx, _%s\n", nombre_vector);
-	fprintf(fpasm, "\tlea eax, [ebx + eax*4]\n");
-	fprintf(fpasm, "\tpush dword eax\n");
+    fprintf(fpasm, "cmp eax, 0\n");
+
+    fprintf(fpasm, "jl near ior_err_handler\n");
+
+    fprintf(fpasm, "cmp eax, %d\n", tam_max - 1);
+
+    fprintf(fpasm, "jg near ior_err_handler\n");
+
+    fprintf(fpasm, "mov dword edx, _%s\n", nombre_vector);
+
+    fprintf(fpasm, "lea eax, [edx + eax*4]\n");
+
+    fprintf(fpasm, "push dword eax\n");
+    fprintf(fpasm,"\n");
 }
 
-void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc)
-{
-	fprintf(fd_asm, "_%s:\n", nombre_funcion);
-	fprintf(fd_asm, "\tpush ebp\n");
-	fprintf(fd_asm, "\tmov ebp, esp\n");
-	fprintf(fd_asm, "\t sub esp, %d\n", 4*num_var_loc);
+void asignarElementoVector(FILE *fpasm, int es_variable) {
+
+    fprintf(fpasm,";; asignarElementoVector\n");
+
+    /* Primer extraigo el valor */
+    obtener_operando(fpasm, es_variable);
+
+    /* Segundo obtengo la direccion */
+    fprintf(fpasm, "pop dword edx\n");
+
+    fprintf(fpasm, "mov dword [edx], eax\n");
+    fprintf(fpasm,"\n");
 }
 
-void retornarFuncion(FILE * fd_asm, int es_variable)
+/* MANIPULACION DE FUNCIONES */
+
+void declararFuncion(FILE *fpasm, char *nombre_funcion, int num_var_loc)
 {
-	fprintf(fd_asm, "\tpop dword eax\n");
+    fprintf(fpasm,";; declararFuncion\n");
 
-	if (es_variable>0){
-		fprintf(fd_asm, "\tmov eax, [eax]\n");
-	}
-
-	fprintf(fd_asm, "\tmov dword esp, ebp\n");
-	fprintf(fd_asm, "\tpop dword ebp\n");
-	fprintf(fd_asm, "\tret\n");
+    fprintf(fpasm, "_%s:\n", nombre_funcion);
+    fprintf(fpasm, "push dword ebp\n");
+    fprintf(fpasm, "mov dword ebp, esp\n");
+    fprintf(fpasm, "sub esp, %d\n", 4 * num_var_loc);
+    fprintf(fpasm,"\n");
 }
 
-void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros)
+void retornarFuncion(FILE *fpasm, int es_variable)
 {
-	fprintf(fpasm, "\tlea eax, [ebp+%d]\n", 4 + 4 * (num_total_parametros - pos_parametro));
-	fprintf(fpasm, "\tpush dword eax\n");
+    fprintf(fpasm,";; retornarFuncion\n");
+
+    obtener_operando(fpasm, es_variable);
+    fprintf(fpasm, "mov dword esp, ebp\n");
+    fprintf(fpasm, "pop dword ebp\n");
+    fprintf(fpasm, "ret\n");
+    fprintf(fpasm,"\n");
 }
 
-void escribirVariableLocal(FILE* fpasm, int posicion_variable_local)
+void escribirParametro(FILE *fpasm, int pos_parametro, int num_total_parametros)
 {
-	fprintf(fpasm, "\tlea eax, [ebp-%d]\n", 4 * posicion_variable_local);
-	fprintf(fpasm, "\tpush dword eax\n");
+    int posicion = 0;
+
+    /* Calculo la posicion del parametro a poner en la cima de la pila */
+    posicion = 4 * (1 + (num_total_parametros - pos_parametro));
+
+    fprintf(fpasm,";; escribirParametro\n");
+
+    fprintf(fpasm, "lea eax, [ebp+ %d]\n", posicion);
+    fprintf(fpasm, "push dword eax\n");
+    fprintf(fpasm,"\n");
 }
 
-void asignarDestinoEnPila(FILE* fpasm, int es_variable)
+void escribirVariableLocal(FILE *fpasm, int posicion_variable_local)
 {
-	fprintf(fpasm, "\tpop dword eax\n");
-	fprintf(fpasm, "\tpop dword ebx\n");
 
-	if (es_variable==1){
-		 fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
-	}
+    int posicion = 0;
 
-	fprintf(fpasm, "\tmov [eax], ebx\n");
+    posicion = 4 * posicion_variable_local;
+
+    fprintf(fpasm,";; escribirVariableLocal\n");
+
+    fprintf(fpasm, "lea eax, [ebp - %d]\n", posicion);
+    fprintf(fpasm, "push dword eax\n");
+    fprintf(fpasm,"\n");
 }
 
-void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable)
+
+void asignarDestinoEnPila(FILE *fpasm, int es_varible)
 {
-	if (es_variable>0) {
-		fprintf(fd_asm, "\tpop eax\n");
-		fprintf(fd_asm, "\tpush dword [eax]\n");
-	}
+    fprintf(fpasm,";; asignarDestinoEnPila\n");
+
+    /* Primero obtengo la direccion */
+    fprintf(fpasm, "pop dword edx\n");
+
+    /* Ahora extraigo el valor */
+    obtener_operando(fpasm, es_varible);
+
+    fprintf(fpasm, "mov dword [edx], eax\n");
+    fprintf(fpasm,"\n");
 }
 
-void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos)
+void operandoEnPilaAArgumento(FILE *fd_asm, int es_variable)
 {
-	fprintf(fd_asm, "\tcall _%s\n", nombre_funcion);
-	fprintf(fd_asm, "\tadd esp, %d\n", 4*num_argumentos);
-	fprintf(fd_asm, "\tpush dword eax\n");
+    fprintf(fd_asm,";; operandoEnPilaAArgumento\n");
+
+    if (es_variable)
+    {
+        fprintf(fd_asm, "pop dword eax\n");
+        fprintf(fd_asm, "mov dword eax, [eax]\n");
+        fprintf(fd_asm, "push dword eax\n");
+    }
+    fprintf(fd_asm,"\n");
 }
 
-void limpiarPila(FILE * fd_asm, int num_argumentos)
+void llamarFuncion(FILE *fd_asm, char *nombre_funcion, int num_argumentos)
 {
-	fprintf(fd_asm, "\tadd esp, %d\n", 4*num_argumentos );
+    fprintf(fd_asm,";; llamarFuncion\n");
+
+    fprintf(fd_asm, "call _%s\n", nombre_funcion);
+    limpiarPila(fd_asm, num_argumentos);
+    fprintf(fd_asm, "push dword eax\n");
+    fprintf(fd_asm,"\n");
+}
+
+void limpiarPila(FILE *fd_asm, int num_argumentos)
+{
+    fprintf(fd_asm,";; limpiarPila\n");
+
+    fprintf(fd_asm, "add esp, %d\n", 4 * num_argumentos);
+    fprintf(fd_asm,"\n");
 }
