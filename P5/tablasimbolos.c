@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "tablaSimbolos.h"
+#include "tablasimbolos.h"
 
 struct s_tabla_simbolos {
   HashTable *tabla_global;

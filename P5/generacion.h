@@ -4,7 +4,7 @@
 /* Declaraciones de tipos de datos del compilador */
 #define ENTERO 0
 #define BOOLEANO 1
-#define MAX_ETIQUETAS 1000
+
 /* OBSERVACIÓN GENERAL A TODAS LAS FUNCIONES:
 Todas ellas escriben el código NASM a un FILE* proporcionado como primer
 argumento.
@@ -26,7 +26,7 @@ mensajes para la identificación de errores en tiempo de ejecución.
 En este punto, al menos, debes ser capaz de detectar la división por 0.
 */
 
-void declarar_variable(FILE* fpasm, char * nombre, int tipo, int tamano);
+void declarar_variable(FILE* fpasm, char * nombre, int tamano);
 /*
 Para ser invocada en la sección .bss cada vez que se quiera declarar una
 variable:
@@ -116,7 +116,6 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2);
 
 void dividir(FILE* fpasm, int es_variable_1, int es_variable_2);
 
-void modulo(FILE* fpasm, int es_variable_1, int es_variable_2);
 
 void o(FILE* fpasm, int es_variable_1, int es_variable_2);
 
@@ -182,7 +181,7 @@ Se deben insertar en la pila los argumentos necesarios, realizar la llamada
 (call) a la función de librería correspondiente y limpiar la pila.
 */
 
-void leer(FILE* fpasm, char* nombre, int tipo);
+void leer(FILE* fpasm, char* nombre, int tipo, int local);
 
 
 void escribir(FILE* fpasm, int es_variable, int tipo);
@@ -273,6 +272,7 @@ void while_fin( FILE * fpasm, int etiqueta);
 
 void escribir_elemento_vector(FILE * fpasm,char * nombre_vector,
 int tam_max, int exp_es_direccion);
+void asignarElementoVector(FILE* fpasm, int es_variable);
 /*
 * Generación de código para indexar un vector
 *  Cuyo nombre es nombre_vector
@@ -353,4 +353,6 @@ void limpiarPila(FILE * fd_asm, int num_argumentos);
 * conocimiento por parte de la función de llamada del número de argumentos que hay en la
 * pila
 */
+
+void modulo(FILE* fpasm, int es_variable_1, int es_variable_2);
 #endif

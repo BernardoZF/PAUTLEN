@@ -9,7 +9,7 @@
   #include <string.h>
 
   #include "alfa.h"
-  #include "tablaSimbolos.h"
+  #include "tablasimbolos.h"
   #include "generacion.h"
 
   #include "y.tab.h"
@@ -73,6 +73,7 @@
 %token TOK_SCANF TOK_PRINTF TOK_RETURN
 %token TOK_AND TOK_OR TOK_NOT
 %token TOK_MAYORIGUAL TOK_IGUAL TOK_DISTINTO TOK_MENORIGUAL
+%token TOK_MODULO
 
 %token TOK_MAIN
 
@@ -116,7 +117,7 @@ programa: inicio TOK_MAIN '{' declaraciones escritura1 funciones escritura2 sent
     fprintf(yyout, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");
 };
 
-inicio: /* vacio */ 
+inicio: /* vacio */
 {
   ambito_local = 0;
   etiqueta = 0;
@@ -176,7 +177,7 @@ tipo: TOK_INT
 {
     tipo_actual = ENTERO;
     fprintf(yyout, ";R10:\t<tipo> ::= int\n");
-} 
+}
   | TOK_BOOLEAN
 {
     tipo_actual = BOOLEAN;
@@ -198,7 +199,7 @@ identificador: TOK_IDENTIFICADOR
         yyerror("Variable local de tipo no escalar");
         return -1;
       }
-      ts_insert(tabla, $1.lexema, VARIABLE, tipo_actual, clase_actual, tamanio_vector_actual, 0);    
+      ts_insert(tabla, $1.lexema, VARIABLE, tipo_actual, clase_actual, tamanio_vector_actual, 0);
     } else {
       ts_insert(tabla, $1.lexema, VARIABLE, tipo_actual, clase_actual, 0, pos_variable_local_actual);
     }
@@ -213,7 +214,7 @@ identificador: TOK_IDENTIFICADOR
 escritura1: /* vacio */
 {
   /* Llamada a funciones para escribir la seccion data con los mensajes generales y
-  la tabla de simbolos, asi como todo lo necesario para que lo siguiente ha escribir 
+  la tabla de simbolos, asi como todo lo necesario para que lo siguiente ha escribir
   en el fichero ensamblador sea la sentencia main: */
   escribir_subseccion_data(yyasm);
   escribir_cabecera_bss(yyasm);
@@ -222,10 +223,10 @@ escritura1: /* vacio */
   Ht_item* p_item = NULL;
   simbolo* p_s = NULL;
 
-  for (p_lista_simbolos = ts_get_simbolos(tabla); 
-        p_lista_simbolos != NULL; 
+  for (p_lista_simbolos = ts_get_simbolos(tabla);
+        p_lista_simbolos != NULL;
         p_lista_simbolos = get_LinkedList_next(p_lista_simbolos)) {
-    p_item = get_LinkedList_item(p_lista_simbolos); 
+    p_item = get_LinkedList_item(p_lista_simbolos);
     p_s = get_Htitem_value(p_item);
     if (get_simbolo_clase(p_s) == ESCALAR) {
       declarar_variable(yyasm, get_simbolo_lexema(p_s), 1);
@@ -240,7 +241,7 @@ escritura1: /* vacio */
 funciones: funcion funciones
 {
     fprintf(yyout, ";R20:\t<funciones> ::= <funcion> <funciones>\n");
-} 
+}
   | /* vacio */
 {
     fprintf(yyout, ";R21:\t<funciones> ::= \n");
@@ -301,7 +302,7 @@ fn_nombre: TOK_FUNCTION tipo TOK_IDENTIFICADOR
   num_parametros_actual = 0;
   pos_parametro_actual = 0;
   fn_return = 0;
-  tipo_retorno_funcion = tipo_actual; 
+  tipo_retorno_funcion = tipo_actual;
 
   ambito_local = 1;
 
@@ -342,7 +343,7 @@ idpf: TOK_IDENTIFICADOR
     yyerror("Declaracion duplicada");
     return -1;
   }
-  
+
   ts_insert(tabla, $1.lexema, PARAMETRO, tipo_actual, ESCALAR, 0, pos_parametro_actual);
   pos_parametro_actual++;
   num_parametros_actual++;
@@ -401,7 +402,7 @@ sentencia_simple: asignacion
 asignacion: TOK_IDENTIFICADOR '=' exp
 {
   simbolo* p_s = NULL;
-  
+
   p_s = ts_search(tabla, $1.lexema);
   if(!p_s) {
     sprintf(err, "Acceso a variable no declarada %s", $1.lexema);
@@ -428,14 +429,14 @@ asignacion: TOK_IDENTIFICADOR '=' exp
   }
 
   fprintf(yyout, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");
-} 
+}
   | elemento_vector '=' exp
 {
   if ($1.tipo != $3.tipo) {
     yyerror("Asignacion incompatible");
     return -1;
   }
-  
+
   asignarElementoVector(yyasm, $3.es_direccion);
 
   fprintf(yyout, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");
@@ -453,7 +454,7 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
   }
 
   if (get_simbolo_categoria(p_s) ==  FUNCION || get_simbolo_clase(p_s) == VECTOR) {
-    yyerror("Sentencia de lectura incorrecta"); 
+    yyerror("Sentencia de lectura incorrecta");
     return -1;
   }
 
@@ -462,8 +463,8 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
         escribirParametro(yyasm, get_simbolo_adicional2(p_s), num_parametros_actual);
       } else {
         escribirVariableLocal(yyasm, get_simbolo_adicional2(p_s));
-      } 
-  } 
+      }
+  }
 
   leer(yyasm, $2.lexema, get_simbolo_tipo(p_s), ambito_local);
 
@@ -509,7 +510,7 @@ exp: exp '+' exp
   sumar(yyasm, $1.es_direccion, $3.es_direccion);
 
   fprintf(yyout, ";R72:\t<exp> ::= <exp> + <exp>\n");
-} 
+}
   | exp '-' exp
 {
   if($1.tipo != ENTERO || $3.tipo != ENTERO) {
@@ -523,7 +524,7 @@ exp: exp '+' exp
   restar(yyasm, $1.es_direccion, $3.es_direccion);
 
   fprintf(yyout, ";R73:\t<exp> ::= <exp> - <exp>\n");
-} 
+}
   | exp '/' exp
 {
   if($1.tipo != ENTERO || $3.tipo != ENTERO) {
@@ -537,7 +538,7 @@ exp: exp '+' exp
   dividir(yyasm, $1.es_direccion, $3.es_direccion);
 
   fprintf(yyout, ";R74:\t<exp> ::= <exp> / <exp>\n");
-} 
+}
   | exp '*' exp
 {
   if($1.tipo != ENTERO || $3.tipo != ENTERO) {
@@ -551,7 +552,7 @@ exp: exp '+' exp
   multiplicar(yyasm, $1.es_direccion, $3.es_direccion);
 
   fprintf(yyout, ";R75:\t<exp> ::= <exp> * <exp>\n");
-} 
+}
   | '-' exp
 {
   if($2.tipo != ENTERO) {
@@ -562,10 +563,10 @@ exp: exp '+' exp
   $$.tipo = ENTERO;
   $$.es_direccion = 0;
 
-  cambiar_signo(yyasm, $2.es_direccion); 
+  cambiar_signo(yyasm, $2.es_direccion);
 
   fprintf(yyout, ";R76:\t<exp> ::= - <exp>\n");
-} 
+}
   | exp TOK_AND exp
 {
   if($1.tipo != BOOLEAN || $3.tipo != BOOLEAN) {
@@ -593,7 +594,7 @@ exp: exp '+' exp
   o(yyasm, $1.es_direccion, $3.es_direccion);
 
   fprintf(yyout, ";R78:\t<exp> ::= <exp> || <exp>\n");
-} 
+}
   | TOK_NOT exp
 {
   if($2.tipo != BOOLEAN) {
@@ -604,14 +605,14 @@ exp: exp '+' exp
   $$.tipo = BOOLEAN;
   $$.es_direccion = 0;
 
-  no(yyasm, $2.es_direccion, etiqueta++); 
+  no(yyasm, $2.es_direccion, etiqueta++);
 
   fprintf(yyout, ";R79:\t<exp> ::= ! <exp>\n");
-} 
+}
   | TOK_IDENTIFICADOR
 {
   simbolo* p_s = NULL;
-  
+
   p_s = ts_search(tabla, $1.lexema);
   if(!p_s) {
     sprintf(err, "Acceso a variable no declarada %s", $1.lexema);
@@ -642,28 +643,28 @@ exp: exp '+' exp
   }
 
   fprintf(yyout, ";R80:\t<exp> ::= <identificador>\n");
-} 
+}
   | constante
 {
   $$.tipo = $1.tipo;
   $$.es_direccion = $1.es_direccion;
 
   fprintf(yyout, ";R81:\t<exp> ::= <constante>\n");
-} 
+}
   | '(' exp ')'
 {
   $$.tipo = $2.tipo;
   $$.es_direccion = $2.es_direccion;
 
   fprintf(yyout, ";R82:\t<exp> ::= ( exp )\n");
-} 
+}
   | '(' comparacion ')'
 {
   $$.tipo = $2.tipo;
   $$.es_direccion = $2.es_direccion;
 
   fprintf(yyout, ";R83:\t<exp> ::= ( <comparacion> )\n");
-} 
+}
   | elemento_vector
 {
   $$.tipo = $1.tipo;
@@ -674,7 +675,7 @@ exp: exp '+' exp
   }
 
   fprintf(yyout, ";R85\t<exp> ::= <elemento_vector>\n");
-} 
+}
   | idf_llamada_funcion '(' lista_expresiones ')'
 {
 
@@ -708,7 +709,7 @@ constante: constante_logica
   $$.es_direccion = $1.es_direccion;
 
   fprintf(yyout, ";R99:\t<constante> ::= <constante_logica>\n");
-} 
+}
   | constante_entera
 {
   $$.tipo = $1.tipo;
@@ -725,7 +726,7 @@ constante_logica: TOK_TRUE
   escribir_operando(yyasm, "1", $$.es_direccion);
 
   fprintf(yyout, ";R102\t<constante_logica> ::= true\n");
-} 
+}
   | TOK_FALSE
 {
   $$.tipo = BOOLEAN;
@@ -760,10 +761,10 @@ comparacion: exp TOK_IGUAL exp
   $$.tipo = BOOLEAN;
   $$.es_direccion = 0;
 
-  igual(yyasm, $1.es_direccion, $3.es_direccion, etiqueta++); 
+  igual(yyasm, $1.es_direccion, $3.es_direccion, etiqueta++);
 
   fprintf(yyout, ";R93:\t<comparacion> ::= <exp> == <exp>\n");
-} 
+}
   | exp TOK_DISTINTO exp
 {
   if($1.tipo != ENTERO || $3.tipo != ENTERO) {
@@ -774,10 +775,10 @@ comparacion: exp TOK_IGUAL exp
   $$.tipo = BOOLEAN;
   $$.es_direccion = 0;
 
-  distinto(yyasm, $1.es_direccion, $3.es_direccion, etiqueta++);  
+  distinto(yyasm, $1.es_direccion, $3.es_direccion, etiqueta++);
 
   fprintf(yyout, ";R94:\t<comparacion> ::= <exp> != <exp>\n");
-} 
+}
   | exp TOK_MENORIGUAL exp
 {
   if($1.tipo != ENTERO || $3.tipo != ENTERO) {
@@ -819,7 +820,7 @@ comparacion: exp TOK_IGUAL exp
   menor(yyasm, $1.es_direccion, $3.es_direccion, etiqueta++);
 
   fprintf(yyout, ";R97:\t<comparacion> ::= <exp> < <exp>\n");
-} 
+}
   | exp '>' exp
 {
   if($1.tipo != ENTERO || $3.tipo != ENTERO) {
@@ -845,12 +846,12 @@ elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
     yyerror(err);
     return -1;
   }
-  
+
   if (get_simbolo_clase(p_s) != VECTOR) {
     yyerror("Intento de indexacion de una variable que no es de tipo vector");
     return -1;
   }
-  
+
   if ($3.tipo != ENTERO) {
     yyerror("El indice en una operacion de indexacion tiene que ser de tipo entero");
     return -1;
@@ -858,7 +859,7 @@ elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
 
   $$.tipo = get_simbolo_tipo(p_s);
   $$.es_direccion = 1;
-  
+
   escribir_elemento_vector(yyasm, $1.lexema, tamanio_vector_actual, $3.es_direccion);
 
   fprintf(yyout, ";R48:\t<elemento_vector> ::= <identificador> [ <expr> ]\n");
@@ -895,7 +896,7 @@ lista_expresiones: exp resto_lista_expresiones
 {
   num_parametros_llamada_actual++;
   fprintf(yyout, ";R89\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n");
-} 
+}
   | /* vacia */
 {
   fprintf(yyout, ";R90\t<lista_expresiones> ::= \n");
@@ -905,7 +906,7 @@ resto_lista_expresiones: ',' exp resto_lista_expresiones
 {
   num_parametros_llamada_actual++;
   fprintf(yyout, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones>\n");
-} 
+}
   | /* vacia */
 {
   fprintf(yyout, ";R92:\t<resto_lista_expresiones> ::= \n");
@@ -923,9 +924,9 @@ bloque: condicional
 condicional: if_exp ')' '{' sentencias '}'
 {
   ifthen_fin(yyasm, $1.etiqueta);
-  
+
   fprintf(yyout, ";R50:\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");
-} 
+}
   | if_exp_sentencias TOK_ELSE '{' sentencias '}'
 {
   ifthenelse_fin(yyasm, $1.etiqueta);
@@ -967,7 +968,7 @@ while_exp: while exp
   }
 
   $$.etiqueta = $1.etiqueta;
-  
+
   while_exp_pila(yyasm, $2.es_direccion, $$.etiqueta);
 }
 
