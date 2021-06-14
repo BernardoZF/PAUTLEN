@@ -10,7 +10,7 @@
     #include "alfa.h"
     #include "y.tab.h"
 
-    /* Definicion de macros */
+   
 
     /* Definicion de variables */
     int row = 1;
@@ -75,6 +75,7 @@ return  {col+=yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_RETURN;}
 "!="        {col+=yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_DISTINTO;}
 "<="        {col+=yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_MENORIGUAL;}
 ">="        {col+=yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_MAYORIGUAL;}
+"%="        {col+=yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return TOK_MODULO;}
 "<"         {col+=yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return yytext[0];}
 ">"         {col+=yyleng; fprintf(yyout, ";D:\t%s\n", yytext); return yytext[0];}
 

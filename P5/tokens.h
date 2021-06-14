@@ -46,6 +46,7 @@ Descripcion: Definicion de tokens para el lenguaje ALFA
 #define TOK_MAYORIGUAL          219
 #define TOK_MENOR               220
 #define TOK_MAYOR               221
+#define TOK_MODULO              405
 
 
 /* Identificadores  */
