@@ -393,6 +393,9 @@ sentencia_simple: asignacion
   | escritura
 {
     fprintf(yyout, ";R36:\t<sentencia_simple> ::= <escritura>\n");
+}  | modulo
+{
+    fprintf(yyout, ";R39:\t<sentencia_simple> ::= <modulo>\n");
 }
   | retorno_funcion
 {
@@ -978,6 +981,68 @@ while: TOK_WHILE '('
 
   while_inicio(yyasm, $$.etiqueta);
 }
+
+modulo: TOK_IDENTIFICADOR TOK_MODULO exp
+{
+  simbolo* p_s = NULL;
+
+  p_s = ts_search(tabla, $1.lexema);
+  if(!p_s) {
+    sprintf(err, "Acceso a variable no declarada %s", $1.lexema);
+    yyerror(err);
+    return -1;
+  }
+
+  if (get_simbolo_categoria(p_s) == FUNCION ||
+              get_simbolo_clase(p_s) == VECTOR ||
+              get_simbolo_tipo(p_s) != ENTERO) {
+    yyerror("modulo incompatible");
+    return -1;
+  }
+
+  if($3.tipo != ENTERO){
+    yyerror("modulo incompatible");
+    return -1;
+  }
+
+
+  if (ambito_local) {
+    if(get_simbolo_categoria(p_s) == PARAMETRO) {
+      escribirParametro(yyasm, get_simbolo_adicional2(p_s), num_parametros_actual);
+    } else {
+      escribirVariableLocal(yyasm, get_simbolo_adicional2(p_s));
+    }
+
+    modulo(yyasm, 1, $3.es_direccion);
+    escribirVariableLocal(yyasm, get_simbolo_adicional2(p_s));
+    asignarDestinoEnPila(yyasm, 0);
+  } else {
+    escribir_operando(yyasm, $1.lexema,1);
+    modulo(yyasm, $1.es_direccion, $3.es_direccion);
+    asignar(yyasm, $1.lexema, 1);
+  }
+
+  fprintf(yyout, ";RExtra1:\t<modulo> ::= <identificador> = <exp>\n");
+}
+  | elemento_vector TOK_MODULO exp
+{
+  if ($1.tipo != ENTERO) {
+    yyerror("modulo incompatible");
+    return -1;
+  }
+
+ if($3.tipo!= ENTERO){
+    yyerror("modulo incompatible");
+    return -1;
+  }
+
+  /*Hacer modulo de la expresion */
+  escribir_operando(yyasm, $1.lexema,1);
+  modulo(yyasm, $1.es_direccion, $3.es_direccion);
+  asignarElementoVector(yyasm, 0);
+
+  fprintf(yyout, ";RExtra2:\t<modulo> ::= <elemento_vector> = <exp>\n");
+};
 
 
 %%

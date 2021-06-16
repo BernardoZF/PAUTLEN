@@ -644,25 +644,25 @@ void limpiarPila(FILE *fd_asm, int num_argumentos)
 
 void modulo(FILE* fpasm, int es_variable_1, int es_variable_2)
 {
-
+  fprintf(fpasm, "\tpop dword eax\n");
 	fprintf(fpasm, "\tpop dword ebx\n");
-	fprintf(fpasm, "\tpop dword eax\n");
 
 
+  if (es_variable_2>0) {
+    fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
+  }
 	if (es_variable_1>0) {
 		fprintf(fpasm, "\tmov dword eax, [eax]\n");
 	}
-	if (es_variable_2>0) {
-		fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
-	}
 
-	fprintf(fpasm, "\txor edx, edx\n");
+
 
 	fprintf(fpasm, "\tcmp ebx, 0\n");
-	fprintf(fpasm, "\tje error_div_cero\n");
+	fprintf(fpasm, "\tje near div0_err_handler\n");
+
 
 	fprintf(fpasm, "\tcdq\n\tidiv ebx\n");
 
-	/* Se guarda edx en vez de eax porque es aqui donde se guarda el modulo */
+	/* Se guarda edx en vez de eax porque es aqui donde se guarda el resto */
 	fprintf(fpasm, "\tpush dword edx\n");
 }
